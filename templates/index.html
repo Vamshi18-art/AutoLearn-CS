@@ -1,0 +1,1368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoLearnCS - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --primary-light: #818cf8;
+      --secondary: #f1f5f9;
+      --success: #10b981;
+      --success-dark: #059669;
+      --danger: #ef4444;
+      --danger-dark: #dc2626;
+      --warning: #f59e0b;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-light: #94a3b8;
+      --border: #e2e8f0;
+      --card-bg: #ffffff;
+      --bg: #f8fafc;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+      --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 3rem 0 4rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      font-size: 1.125rem;
+      opacity: 0.95;
+      font-weight: 400;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: -2rem auto 0;
+      padding: 0 2rem 4rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+      border: 1px solid var(--border);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+      border-color: var(--primary-light);
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .card-header {
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 2px solid var(--secondary);
+    }
+
+    .card-header h3 {
+      font-size: 1.375rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-primary);
+      letter-spacing: -0.25px;
+    }
+
+    .card-header h3::before {
+      content: '';
+      width: 6px;
+      height: 28px;
+      background: linear-gradient(180deg, var(--primary), var(--primary-light));
+      border-radius: 3px;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.625rem;
+      color: var(--text-primary);
+      letter-spacing: 0.3px;
+    }
+
+    input.field, textarea, select {
+      width: 100%;
+      padding: 0.875rem 1.125rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      background: white;
+      color: var(--text-primary);
+    }
+
+    input.field:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+      background: #fafbff;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.875rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.875rem 1.75rem;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.3px;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: var(--text-primary);
+      border: 2px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      border-color: var(--text-secondary);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.75rem;
+      margin-top: 1.75rem;
+    }
+
+    .post-card {
+      background: white;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .post-card:hover {
+      box-shadow: var(--shadow-xl);
+      transform: translateY(-6px);
+      border-color: var(--primary-light);
+    }
+
+    .post-card.carousel-mode {
+      cursor: pointer;
+    }
+
+    .post-card.carousel-mode.selected {
+      border-color: var(--success);
+      border-width: 3px;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .post-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-bottom: 2px solid var(--border);
+      transition: transform 0.3s ease;
+    }
+
+    .post-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .post-card-content {
+      padding: 1.5rem;
+    }
+
+    .post-title {
+      font-weight: 700;
+      font-size: 1.125rem;
+      margin-bottom: 0.875rem;
+      color: var(--text-primary);
+      letter-spacing: -0.25px;
+    }
+
+    /* FIXED: Better checkbox visibility and styling */
+    .post-select {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: white;
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 10;
+      border: 2px solid var(--primary);
+    }
+
+    .post-select.active {
+      display: block !important;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .post-select input[type="checkbox"] {
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      accent-color: var(--success);
+    }
+
+    /* Selection indicator */
+    .post-card .selection-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: var(--success);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      display: none;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    }
+
+    .post-card.selected .selection-badge {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    details {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    details:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    details[open] {
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+
+    summary {
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fafbff 0%, #f1f5f9 100%);
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.3s ease;
+      font-size: 1.05rem;
+      letter-spacing: -0.25px;
+    }
+
+    summary:hover {
+      background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+      color: var(--primary);
+      padding-left: 1.75rem;
+    }
+
+    summary::marker {
+      color: var(--primary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    th {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+    }
+
+    td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: #fafbff;
+      transform: scale(1.01);
+    }
+
+    input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    .alert {
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.75rem;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-left: 4px solid var(--warning);
+      color: #92400e;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      border-left: 4px solid var(--primary);
+      padding: 1.125rem 1.25rem;
+      border-radius: 10px;
+      margin-top: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .info-box p {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2.5rem 0;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      border-top: 2px solid var(--border);
+      margin-top: 4rem;
+      font-weight: 500;
+    }
+
+    .carousel-controls {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-xl);
+      display: none;
+      z-index: 1000;
+      border: 2px solid var(--border);
+      min-width: 320px;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .carousel-controls.active {
+      display: block;
+    }
+
+    .carousel-controls h4 {
+      margin-bottom: 1rem;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .stats-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+
+    /* Logic Puzzle Navigator Styles */
+    .puzzle-navigator {
+      background: white;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      padding: 2rem;
+      margin-top: 1.75rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .puzzle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .puzzle-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .puzzle-progress {
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .puzzle-content {
+      background: var(--secondary);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .puzzle-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-primary);
+    }
+
+    .puzzle-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .puzzle-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .puzzle-btn:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .puzzle-btn:disabled {
+      background: var(--text-light);
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 { font-size: 2rem; }
+      .header { padding: 2rem 0 3rem; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .container { padding: 0 1rem 2rem; margin-top: -1.5rem; }
+      .posts-grid { grid-template-columns: 1fr; }
+      .carousel-controls { 
+        right: 12px; 
+        bottom: 12px; 
+        left: 12px;
+        min-width: auto;
+      }
+      .puzzle-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+    }
+
+    /* Loading animation */
+    .btn.loading::after {
+      content: '';
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="header-content">
+      <h1>🎓 AutoLearnCS Dashboard</h1>
+      <p>Create, schedule, and track your DSA & Logic Puzzle learning content with professional slides</p>
+    </div>
+  </div>
+
+  <div class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for m in messages %}
+          <div class="alert">{{ m }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-header">
+          <h3>Generate Slides</h3>
+        </div>
+        <form method="post" action="{{ url_for('generate') }}">
+          <label>Topic Name</label>
+          <input class="field" type="text" name="topic" placeholder="e.g. Binary Search Tree Traversal" required>
+          <div class="btn-group">
+            <button class="btn btn-primary" type="submit">🚀 Generate Slides</button>
+            <button class="btn btn-secondary" type="reset">Clear</button>
+          </div>
+        </form>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h3>🧩 Weekly Quiz Challenge</h3>
+        </div>
+        <form method="post" action="{{ url_for('generate_quiz') }}">
+          <label>Topic</label>
+          <input class="field" type="text" name="topic" placeholder="e.g. Python Functions" required>
+          <div class="btn-group">
+            <button class="btn btn-primary" type="submit">🚀 Generate Quiz Slides</button>
+            <button class="btn btn-secondary" type="reset">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>💻 Guess the Output</h3>
+        </div>
+        <form method="post" action="{{ url_for('generate_guess_output') }}">
+          <label>Topic</label>
+          <input class="field" type="text" name="topic" placeholder="e.g. Python Loops" required>
+          <div class="btn-group">
+            <button class="btn btn-primary" type="submit">🚀 Generate Guess Output Slides</button>
+            <button class="btn btn-secondary" type="reset">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Logic and Puzzle Generator Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🧠 Logic & Puzzle Slides</h3>
+        </div>
+        <form method="post" action="{{ url_for('generate_logic_puzzle') }}">
+          <label>Puzzle Topic</label>
+          <input class="field" type="text" name="topic" placeholder="e.g. Logic Riddles, Probability Puzzles" required>
+          <div class="btn-group">
+            <button class="btn btn-primary" type="submit">🚀 Generate Puzzle Slides</button>
+            <button class="btn btn-secondary" type="reset">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Schedule Posts</h3>
+        </div>
+        <form method="post" action="{{ url_for('schedule_endpoint') }}">
+          <label>Topics to post per run</label>
+          <input class="field" type="number" name="howmany" value="1" min="1" max="5">
+          <div class="btn-group">
+            <button class="btn btn-primary" type="submit">⏱️ Start Scheduler</button>
+            <form method="post" action="{{ url_for('reset') }}" style="display:inline;">
+              <button class="btn btn-secondary" type="submit">Reset</button>
+            </form>
+          </div>
+        </form>
+        <div class="info-box">
+          <p>💡 Posts will be generated even if Instagram credentials are missing</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Generated Posts</h3>
+      </div>
+
+      {% if posts %}
+        <div style="margin-bottom: 1.25rem;">
+          <button class="btn btn-success" onclick="toggleCarouselMode()">📸 Carousel Mode</button>
+          <button class="btn btn-primary" onclick="selectAll()" id="selectAllBtn" style="display:none;">Select All</button>
+          <span class="stats-badge">📊 Total: {{ posts|length }} posts</span>
+        </div>
+
+        <div class="posts-grid" id="postsGrid">
+          {% for p in posts %}
+            <div class="post-card" data-filename="{{ p.filename }}">
+              <div class="selection-badge">✓ Selected</div>
+              <div class="post-select">
+                <input type="checkbox" class="carousel-select" value="{{ p.filename }}">
+              </div>
+              <img src="{{ url_for('static', filename='posts/' ~ p.filename) }}" alt="{{ p.title }}">
+              <div class="post-card-content">
+                <div class="post-title">{{ p.title }}</div>
+                
+                <form method="post" action="{{ url_for('post_image') }}" class="post-form">
+                  <input type="hidden" name="image" value="{{ p.filename }}">
+                  <label>Caption</label>
+                  <textarea name="caption">{{ p.caption }}</textarea>
+                  <div class="btn-group">
+                    <button class="btn btn-primary" type="submit">📸 Post</button>
+                    <a class="btn btn-secondary" href="{{ url_for('static', filename='posts/' ~ p.filename) }}" target="_blank">View</a>
+                    <button class="btn btn-danger" type="button" onclick="deletePost('{{ p.filename }}')">Delete</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="text-align:center; color: var(--text-secondary); padding: 4rem; font-size: 1.125rem;">No posts generated yet. Create your first slide above! ✨</p>
+      {% endif %}
+    </div>
+
+    <!-- Logic Puzzle Navigator -->
+    <div class="card">
+      <div class="card-header">
+        <h3>🧠 Logic Puzzle Navigator</h3>
+      </div>
+      <div class="puzzle-navigator">
+        <div class="puzzle-header">
+          <div class="puzzle-title" id="question-title">Logic Puzzle Navigator</div>
+          <div class="puzzle-progress" id="progress">0 / 30</div>
+        </div>
+        <div class="puzzle-content">
+          <div class="puzzle-text" id="question-text">
+            Navigate through 30 challenging logic puzzles to sharpen your problem-solving skills.
+            Click "Next" to begin!
+          </div>
+        </div>
+        <div class="puzzle-controls">
+          <button class="puzzle-btn" id="prev-btn" disabled>← Previous</button>
+          <button class="puzzle-btn" id="next-btn">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>DSA Learning Tracker</h3>
+      </div>
+      
+      <div>
+        <details>
+          <summary>1️⃣ Arrays</summary>
+          <table>
+            <thead>
+              <tr><th>Subtopic</th><th style="width:100px;">Complete</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Basics (1D, 2D, Dynamic Arrays)</td><td><input type="checkbox" data-topic="arrays-basics"></td></tr>
+              <tr><td>Operations (Insertion, Deletion, Traversal)</td><td><input type="checkbox" data-topic="arrays-operations"></td></tr>
+              <tr><td>Searching (Linear, Binary, Ternary)</td><td><input type="checkbox" data-topic="arrays-searching"></td></tr>
+              <tr><td>Advanced Problems (Prefix Sum, Kadane's, Sliding Window)</td><td><input type="checkbox" data-topic="arrays-problems"></td></tr>
+              <tr><td>Techniques (Two Pointer, Rotate, Reverse)</td><td><input type="checkbox" data-topic="arrays-techniques"></td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <details>
+          <summary>2️⃣ Strings</summary>
+          <table>
+            <thead>
+              <tr><th>Subtopic</th><th style="width:100px;">Complete</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Basics & Manipulation</td><td><input type="checkbox" data-topic="strings-basics"></td></tr>
+              <tr><td>Substrings & Subsequences</td><td><input type="checkbox" data-topic="strings-substrings"></td></tr>
+              <tr><td>Pattern Matching (KMP, Rabin-Karp, Z Algorithm)</td><td><input type="checkbox" data-topic="strings-pattern"></td></tr>
+              <tr><td>Problems (Palindrome, Anagram, Longest Substring)</td><td><input type="checkbox" data-topic="strings-problems"></td></tr>
+              <tr><td>Advanced (Compression, Rotation)</td><td><input type="checkbox" data-topic="strings-advanced"></td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <details>
+          <summary>3️⃣ Linked Lists</summary>
+          <table>
+            <thead>
+              <tr><th>Subtopic</th><th style="width:100px;">Complete</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Types (Singly, Doubly, Circular)</td><td><input type="checkbox" data-topic="linkedlist-types"></td></tr>
+              <tr><td>Basic Operations (Insert, Delete, Traverse, Search)</td><td><input type="checkbox" data-topic="linkedlist-operations"></td></tr>
+              <tr><td>Reverse Linked List</td><td><input type="checkbox" data-topic="linkedlist-reverse"></td></tr>
+              <tr><td>Cycle Detection (Floyd's Algorithm)</td><td><input type="checkbox" data-topic="linkedlist-cycle"></td></tr>
+              <tr><td>Advanced (Merge Lists, Remove Nth Node, Intersection)</td><td><input type="checkbox" data-topic="linkedlist-advanced"></td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <details>
+          <summary>4️⃣ Stacks</summary>
+          <table>
+            <thead>
+              <tr><th>Subtopic</th><th style="width:100px;">Complete</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Implementation (Array, Linked List)</td><td><input type="checkbox" data-topic="stack-implementation"></td></tr>
+              <tr><td>Operations (Push, Pop, Peek)</td><td><input type="checkbox" data-topic="stack-operations"></td></tr>
+              <tr><td>Balanced Parentheses & Next Greater Element</td><td><input type="checkbox" data-topic="stack-problems"></td></tr>
+              <tr><td>Min Stack & Expression Evaluation</td><td><input type="checkbox" data-topic="stack-minstack"></td></tr>
+              <tr><td>Notation Conversion (Infix ↔ Postfix ↔ Prefix)</td><td><input type="checkbox" data-topic="stack-conversion"></td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <details>
+          <summary>5️⃣ Queues</summary>
+          <table>
+            <thead>
+              <tr><th>Subtopic</th><th style="width:100px;">Complete</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Types (Simple, Circular, Priority Queue, Deque)</td><td><input type="checkbox" data-topic="queue-types"></td></tr>
+              <tr><td>Operations (Enqueue, Dequeue)</td><td><input type="checkbox" data-topic="queue-operations"></td></tr>
+              <tr><td>Sliding Window Maximum</td><td><input type="checkbox" data-topic="queue-sliding"></td></tr>
+              <tr><td>Queue Using Stacks</td><td><input type="checkbox" data-topic="queue-stacks"></td></tr>
+              <tr><td>Stream Problems (First Non-Repeating Character)</td><td><input type="checkbox" data-topic="queue-stream"></td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <details>
+          <summary>6️⃣ Hashing / Hash Maps</summary>
+          <table>
+            <thead>
+              <tr><th>Subtopic</th><th style="width:100px;">Complete</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Hash Tables & Collision Handling</td><td><input type="checkbox" data-topic="hash-basics"></td></tr>
+              <tr><td>Frequency Counting</td><td><input type="checkbox" data-topic="hash-frequency"></td></tr>
+              <tr><td>Two Sum / Three Sum Problems</td><td><input type="checkbox" data-topic="hash-twosum"></td></tr>
+              <tr><td>Subarray Sum Equals K</td><td><input type="checkbox" data-topic="hash-subarray"></td></tr>
+              <tr><td>Patterns (Hashing + Sliding Window/Prefix Sum)</td><td><input type="checkbox" data-topic="hash-patterns"></td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <details>
+          <summary>7️⃣ Trees</summary>
+          <table>
+            <thead>
+              <tr><th>Subtopic</th><th style="width:100px;">Complete</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Types (Binary, BST, AVL, Segment Tree, Trie)</td><td><input type="checkbox" data-topic="tree-types"></td></tr>
+              <tr><td>DFS Traversals (Preorder, Inorder, Postorder)</td><td><input type="checkbox" data-topic="tree-dfs"></td></tr>
+              <tr><td>BFS Traversals (Level Order, Zigzag)</td><td><input type="checkbox" data-topic="tree-bfs"></td></tr>
+              <tr><td>Problems (LCA, Diameter, Depth)</td><td><input type="checkbox" data-topic="tree-problems"></td></tr>
+              <tr><td>Advanced (Serialization, Vertical Order, Trie Operations)</td><td><input type="checkbox" data-topic="tree-advanced"></td></tr>
+            </tbody>
+          </table>
+        </details>
+      </div>
+    </div>
+
+    <!-- Logic & Puzzle Tracker -->
+    <div class="card">
+      <div class="card-header">
+        <h3>🧠 Logic & Puzzle Tracker</h3>
+      </div>
+
+      <div>
+        <details>
+          <summary>1️⃣ Classic Logic Puzzles</summary>
+          <table>
+            <thead><tr><th>Puzzle</th><th>Complete</th></tr></thead>
+            <tbody>
+              <tr><td>Heaven and Hell Puzzle</td><td><input type="checkbox" data-topic="logic-heaven"></td></tr>
+              <tr><td>3 Ants and Triangle</td><td><input type="checkbox" data-topic="logic-ants"></td></tr>
+              <tr><td>10 Coins Puzzle</td><td><input type="checkbox" data-topic="logic-coins"></td></tr>
+              <tr><td>Mislabeled Jars</td><td><input type="checkbox" data-topic="logic-jars"></td></tr>
+              <tr><td>Bridge and Torch</td><td><input type="checkbox" data-topic="logic-bridge"></td></tr>
+              <tr><td>100 Doors Problem</td><td><input type="checkbox" data-topic="logic-doors"></td></tr>
+              <tr><td>Heaven's Gate Riddle</td><td><input type="checkbox" data-topic="logic-gate"></td></tr>
+              <tr><td>Camel and Banana</td><td><input type="checkbox" data-topic="logic-camel"></td></tr>
+              <tr><td>The Man in the Elevator</td><td><input type="checkbox" data-topic="logic-elevator"></td></tr>
+              <tr><td>Two Strings Puzzle</td><td><input type="checkbox" data-topic="logic-strings"></td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <details>
+          <summary>2️⃣ Mathematical & Coin Puzzles</summary>
+          <table>
+            <thead><tr><th>Puzzle</th><th>Complete</th></tr></thead>
+            <tbody>
+              <tr><td>The Hardest Logic Puzzle Ever</td><td><input type="checkbox" data-topic="math-hardest"></td></tr>
+              <tr><td>The Missing Dollar Riddle</td><td><input type="checkbox" data-topic="math-dollar"></td></tr>
+              <tr><td>The Poisoned Drink</td><td><input type="checkbox" data-topic="math-poison"></td></tr>
+              <tr><td>The Light Bulb Problem</td><td><input type="checkbox" data-topic="math-bulb"></td></tr>
+              <tr><td>The 100 Prisoners Problem</td><td><input type="checkbox" data-topic="math-prisoners"></td></tr>
+              <tr><td>The 8 Ball Puzzle</td><td><input type="checkbox" data-topic="math-8ball"></td></tr>
+              <tr><td>The 12 Coin Problem</td><td><input type="checkbox" data-topic="math-12coin"></td></tr>
+              <tr><td>The Poisoned Drink Revisited</td><td><input type="checkbox" data-topic="math-poison2"></td></tr>
+              <tr><td>The River Crossing Puzzle</td><td><input type="checkbox" data-topic="math-river"></td></tr>
+              <tr><td>The 4 Hats Problem</td><td><input type="checkbox" data-topic="math-hats"></td></tr>
+            </tbody>
+          </table>
+        </details>
+
+        <details>
+          <summary>3️⃣ Strategic Problems</summary>
+          <table>
+            <thead><tr><th>Puzzle</th><th>Complete</th></tr></thead>
+            <tbody>
+              <tr><td>The 4 People and a Bridge</td><td><input type="checkbox" data-topic="strategy-bridge"></td></tr>
+              <tr><td>The 100 Prisoners and a Light Bulb</td><td><input type="checkbox" data-topic="strategy-prisoners"></td></tr>
+              <tr><td>The 3 Switches Problem</td><td><input type="checkbox" data-topic="strategy-switches"></td></tr>
+              <tr><td>The 3 Hats Problem</td><td><input type="checkbox" data-topic="strategy-hats"></td></tr>
+              <tr><td>The 3 Prisoners Problem</td><td><input type="checkbox" data-topic="strategy-3prisoners"></td></tr>
+              <tr><td>The 3 Switches and 3 Bulbs</td><td><input type="checkbox" data-topic="strategy-3bulbs"></td></tr>
+              <tr><td>The 4 Switches Problem</td><td><input type="checkbox" data-topic="strategy-4switches"></td></tr>
+              <tr><td>The 5 Pirates Problem</td><td><input type="checkbox" data-topic="strategy-pirates"></td></tr>
+              <tr><td>The 2 Eggs and 100 Floors</td><td><input type="checkbox" data-topic="strategy-eggs"></td></tr>
+              <tr><td>Prisoner Hats</td><td><input type="checkbox" data-topic="strategy-prisonerhats"></td></tr>
+            </tbody>
+          </table>
+        </details>
+      </div>
+    </div>
+
+    <footer>
+      © 2025 AutoLearnCS • Professional DSA & Logic Content Dashboard
+    </footer>
+  </div>
+
+  <!-- Carousel Controls -->
+  <div class="carousel-controls" id="carouselControls">
+    <h4>📸 Carousel Post</h4>
+    <p style="margin-bottom: 0.75rem; color: var(--text-secondary); font-size: 0.875rem;">Selected: <span id="selectedCount" style="font-weight: 700; color: var(--primary);">0</span> images</p>
+    <div style="margin-bottom: 1.25rem;">
+      <label>Caption</label>
+      <textarea id="carouselCaption" rows="3" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 2px solid var(--border); font-family: inherit;">Learn DSA! 📚
+
+#DSA #Programming #Coding #LearnToCode #ComputerScience #Algorithms #DataStructures</textarea>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-success" onclick="postCarousel()">📸 Post Carousel</button>
+      <button class="btn btn-secondary" onclick="toggleCarouselMode()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Persistent checkbox state
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"][data-topic]');
+      
+      // Load saved states
+      checkboxes.forEach(checkbox => {
+        const topic = checkbox.getAttribute('data-topic');
+        const saved = localStorage.getItem(`dsa_${topic}`);
+        if (saved === 'true') {
+          checkbox.checked = true;
+        }
+      });
+      
+      // Save on change
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const topic = this.getAttribute('data-topic');
+          localStorage.setItem(`dsa_${topic}`, this.checked);
+        });
+      });
+    });
+
+    // Carousel mode - FIXED
+    let carouselMode = false;
+
+    function toggleCarouselMode() {
+      carouselMode = !carouselMode;
+      const postCards = document.querySelectorAll('.post-card');
+      const selects = document.querySelectorAll('.post-select');
+      const forms = document.querySelectorAll('.post-form');
+      const controls = document.getElementById('carouselControls');
+      const selectAllBtn = document.getElementById('selectAllBtn');
+      
+      // Toggle visibility of checkboxes
+      selects.forEach(s => {
+        if (carouselMode) {
+          s.classList.add('active');
+        } else {
+          s.classList.remove('active');
+        }
+      });
+
+      // Toggle carousel mode styling on cards
+      postCards.forEach(card => {
+        if (carouselMode) {
+          card.classList.add('carousel-mode');
+        } else {
+          card.classList.remove('carousel-mode');
+          card.classList.remove('selected');
+        }
+      });
+
+      // Hide/show forms
+      forms.forEach(f => {
+        f.style.display = carouselMode ? 'none' : 'block';
+      });
+      
+      controls.classList.toggle('active', carouselMode);
+      selectAllBtn.style.display = carouselMode ? 'inline-flex' : 'none';
+      
+      if (!carouselMode) {
+        document.querySelectorAll('.carousel-select').forEach(cb => cb.checked = false);
+        updateSelectedCount();
+      }
+    }
+
+    // Handle checkbox changes
+    document.addEventListener('change', function(e) {
+      if (e.target.classList.contains('carousel-select')) {
+        const card = e.target.closest('.post-card');
+        if (e.target.checked) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+        updateSelectedCount();
+      }
+    });
+
+    // Allow clicking on card to toggle selection in carousel mode
+    document.addEventListener('click', function(e) {
+      if (!carouselMode) return;
+      
+      const card = e.target.closest('.post-card');
+      if (card && !e.target.classList.contains('carousel-select')) {
+        const checkbox = card.querySelector('.carousel-select');
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    });
+
+    function selectAll() {
+      const checkboxes = document.querySelectorAll('.carousel-select');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+      checkboxes.forEach(cb => {
+        cb.checked = !allChecked;
+        cb.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      const count = document.querySelectorAll('.carousel-select:checked').length;
+      document.getElementById('selectedCount').textContent = count;
+    }
+
+    function postCarousel() {
+      const selected = Array.from(document.querySelectorAll('.carousel-select:checked')).map(cb => cb.value);
+      const caption = document.getElementById('carouselCaption').value;
+      
+      if (selected.length < 2) {
+        alert('⚠️ Select at least 2 images for carousel');
+        return;
+      }
+      
+      if (selected.length > 10) {
+        alert('⚠️ Maximum 10 images allowed');
+        return;
+      }
+      
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '{{ url_for("post_carousel") }}';
+      
+      selected.forEach(img => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'images[]';
+        input.value = img;
+        form.appendChild(input);
+      });
+      
+      const captionInput = document.createElement('input');
+      captionInput.type = 'hidden';
+      captionInput.name = 'caption';
+      captionInput.value = caption;
+      form.appendChild(captionInput);
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    function deletePost(filename) {
+      if (!confirm(`Delete ${filename}?`)) return;
+      
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/delete_post/${filename}`;
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    // Logic Puzzle Questions
+    const questions = [
+      { 
+        title: "1. Heaven and Hell", 
+        text: "You are at a fork in the road with two paths: one leads to Heaven and the other to Hell. There are two guards: one always tells the truth, and the other always lies. You can ask only one question to one guard. What do you ask to find the path to Heaven?" 
+      },
+      { 
+        title: "2. 3 Ants and Triangle", 
+        text: "Three ants are placed at the corners of an equilateral triangle. Each ant randomly picks a direction and starts moving along the edge of the triangle. What is the probability that no two ants collide?" 
+      },
+      { 
+        title: "3. 10 Coins Puzzle", 
+        text: "You are blindfolded and 10 coins are placed in front of you. You know that there are 5 heads and 5 tails. Can you divide them into two piles such that each pile has the same number of heads?" 
+      },
+      { 
+        title: "4. Mislabeled Jars", 
+        text: "There are three jars labeled 'Candies,' 'Sweets,' and 'Candies and Sweets.' All labels are wrong. You can pick only one item from one jar. How do you correctly label all the jars?" 
+      },
+      { 
+        title: "5. Bridge and Torch Problem", 
+        text: "Four people need to cross a bridge at night. They have one torch and the bridge can only hold two people at a time. Person A takes 1 minute, B takes 2 minutes, C takes 5 minutes, and D takes 10 minutes to cross. What is the fastest way for all to cross?" 
+      },
+      { 
+        title: "6. 100 Doors Problem", 
+        text: "There are 100 doors in a row, all initially closed. You make 100 passes by the doors, starting with the first door every time. The first time through, you visit every door and toggle the door (if the door is closed, open it; if it is open, close it). The second time you only visit every second door (door #2, #4, #6, ...). The third time, every third door (door #3, #6, #9, ...), etc., until you only visit the 100th door. What state are the doors in after the last pass? Which are open and which are closed?" 
+      },
+      { 
+        title: "7. Heaven's Gate Riddle", 
+        text: "You're standing in front of two doors. One door leads to Heaven, the other to Hell. There are two guards: one always tells the truth, and the other always lies. You can ask one question to one guard. What question do you ask to find the door to Heaven?" 
+      },
+      { 
+        title: "8. Camel and Banana Problem", 
+        text: "A camel is carrying bananas across a desert. The camel can carry a maximum of 1000 bananas at a time and eats one banana per kilometer. The distance to the destination is 1000 kilometers. What is the maximum number of bananas that can be delivered?" 
+      },
+      { 
+        title: "9. The Man in the Elevator", 
+        text: "A man lives on the 10th floor of a building. Every day, he takes the elevator to the ground floor to go to work. When he returns, he takes the elevator to the 7th floor and walks the rest of the way up. Why does he do this?" 
+      },
+      { 
+        title: "10. Two Strings Puzzle", 
+        text: "You have two strings, one of which is 100 meters long and the other 1 meter long. You also have a box of matches. How do you measure exactly 45 minutes using these two strings?" 
+      },
+      { 
+        title: "11. The Hardest Logic Puzzle Ever", 
+        text: "You are on an island inhabited by gods who answer questions. There are three gods: one always tells the truth, one always lies, and one answers randomly. You can ask three yes/no questions, each to one god. What questions do you ask to determine which god is which?" 
+      },
+      { 
+        title: "12. The Missing Dollar Riddle", 
+        text: "Three friends check into a hotel room that costs $30. They each contribute $10. Later, the hotel clerk realizes there's a mistake and the room only costs $25. He gives $5 to the bellboy and asks him to return it to the guests. The bellboy, unable to divide $5 evenly, gives each guest $1 and keeps $2 for himself. Now, each guest has paid $9, totaling $27. The bellboy has $2, making $29. Where is the missing dollar?" 
+      },
+      { 
+        title: "13. The Poisoned Drink", 
+        text: "You have 1000 bottles of wine and a rat. You need to find out which bottle is poisoned. The rat dies after 1 hour if it drinks the poisoned wine. You can test the rat only once. How do you determine which bottle is poisoned?" 
+      },
+      { 
+        title: "14. The Light Bulb Problem", 
+        text: "You are in a room with three light switches, all in the 'off' position. Each switch controls one of three light bulbs in the next room. You can turn the switches on and off and leave them in any position. How can you find out which switch controls which bulb?" 
+      },
+      { 
+        title: "15. The 100 Prisoners Problem", 
+        text: "100 prisoners are each assigned a number from 1 to 100. They are placed in a room with 100 boxes, each containing a piece of paper with a number on it. Each prisoner can open 50 boxes. If they find their number, they are freed. If not, they are executed. What strategy gives them the best chance of survival?" 
+      },
+      { 
+        title: "16. The 8 Ball Puzzle", 
+        text: "You have 8 balls of equal size. One of them is slightly heavier than the others. Using a balance scale, how can you find the heavier ball in just two weighings?" 
+      },
+      { 
+        title: "17. The 12 Coin Problem", 
+        text: "You have 12 coins, one of which is either heavier or lighter than the others. Using a balance scale, how can you find the odd coin in just three weighings?" 
+      },
+      { 
+        title: "18. The Poisoned Drink Revisited", 
+        text: "You have 1000 bottles of wine, and one is poisoned. You have 10 prisoners and a testing facility that can test any number of prisoners at once. The test takes 1 hour to complete. How do you determine which bottle is poisoned using the fewest tests?" 
+      },
+      { 
+        title: "19. The River Crossing Puzzle", 
+        text: "A farmer needs to cross a river with a wolf, a goat, and a cabbage. He has a boat that can carry only himself and one item at a time. If left together, the wolf will eat the goat, and the goat will eat the cabbage. How does he get all three across safely?" 
+      },
+      { 
+        title: "20. The 4 Hats Problem", 
+        text: "Four people are seated in a row, each wearing a hat that is either red or blue. They can see the hats of the people in front of them but not their own or those behind them. Starting from the back, each person must say the color of their own hat. How can they all guess correctly?" 
+      },
+      { 
+        title: "21. The 4 People and a Bridge", 
+        text: "Four people need to cross a bridge at night. They have one torch and the bridge can only hold two people at a time. Person A takes 1 minute, B takes 2 minutes, C takes 5 minutes, and D takes 10 minutes to cross. What is the fastest way for all to cross?" 
+      },
+      { 
+        title: "22. The 100 Prisoners and a Light Bulb", 
+        text: "100 prisoners are each assigned a number from 1 to 100. They are placed in a room with a light bulb. Each day, one prisoner is allowed to enter the room and toggle the light bulb. They must devise a strategy to determine when all prisoners have entered the room at least once." 
+      },
+      { 
+        title: "23. The 3 Switches Problem", 
+        text: "You are in a room with three switches, all in the 'off' position. Each switch controls one of three light bulbs in the next room. You can turn the switches on and off and leave them in any position. How can you find out which switch controls which bulb?" 
+      },
+      { 
+        title: "24. The 3 Hats Problem", 
+        text: "Three people are each wearing a hat that is either red or blue. They can see the hats of the others but not their own. They are told that at least one of them is wearing a red hat. How do they determine the color of their own hats?" 
+      },
+      { 
+        title: "25. The 3 Prisoners Problem", 
+        text: "Three prisoners are each given a hat that is either red or blue. They can see the hats of the others but not their own. They are told that at least one of them is wearing a red hat. How do they determine the color of their own hats?" 
+      },
+      { 
+        title: "26. The 3 Switches and 3 Bulbs", 
+        text: "You are in a room with three switches, all in the 'off' position. Each switch controls one of three light bulbs in the next room. You can turn the switches on and off and leave them in any position. How can you find out which switch controls which bulb?" 
+      },
+      { 
+        title: "27. The 4 Switches Problem", 
+        text: "You are in a room with four switches, all in the 'off' position. Each switch controls one of four light bulbs in the next room. You can turn the switches on and off and leave them in any position. How can you find out which switch controls which bulb?" 
+      },
+      { 
+        title: "28. The 5 Pirates Problem", 
+        text: "Five pirates of different ages have a treasure of 100 gold coins. They must decide how to divide the coins among themselves. The oldest pirate proposes a distribution, and all pirates (including the proposer) vote on it. If at least half agree, the coins are distributed accordingly. If not, the proposer is thrown overboard, and the process repeats with the next oldest pirate. What distribution will the pirates agree on?" 
+      },
+      { 
+        title: "29. The 2 Eggs and 100 Floors", 
+        text: "You have two identical eggs and access to a 100-story building. You want to determine the highest floor from which an egg can be dropped without breaking. What is the minimum number of drops needed to guarantee finding this floor?" 
+      },
+      { 
+        title: "30. Prisoner Hats", 
+        text: "There are 10 prisoners and 10 hats. Each hat is either black or white. The prisoners are lined up in a row, each facing the same direction. Each prisoner can see the hats of the prisoners in front of them but not their own or those behind. Starting from the back, each prisoner must guess the color of their own hat. How can they maximize the number of correct guesses?" 
+      }
+    ];
+
+    let currentQuestion = 0;
+
+    function showQuestion(index) {
+      const t = document.getElementById('question-title');
+      const txt = document.getElementById('question-text');
+      const progress = document.getElementById('progress');
+      t.textContent = questions[index].title;
+      txt.textContent = questions[index].text;
+      progress.textContent = `${index + 1} / ${questions.length}`;
+      document.getElementById('prev-btn').disabled = index === 0;
+      document.getElementById('next-btn').disabled = index === questions.length - 1;
+    }
+
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (currentQuestion > 0) { 
+        currentQuestion--; 
+        showQuestion(currentQuestion); 
+      }
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+      if (currentQuestion < questions.length - 1) { 
+        currentQuestion++; 
+        showQuestion(currentQuestion); 
+      }
+    });
+
+    // Initialize the puzzle navigator
+    document.addEventListener('DOMContentLoaded', () => {
+      showQuestion(currentQuestion);
+    });
+  </script>
+</body>
+</html>
