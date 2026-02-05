@@ -1,17 +1,21 @@
-# main.py
+# main.py - FIXED VERSION
 import os
 import time
 import traceback
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from concurrent.futures import ThreadPoolExecutor
 from utils.logger import logger
+from dotenv import load_dotenv
+
+# Load environment variables FIRST
+load_dotenv()
+
+# Now import modules after environment is loaded
 from modules.generator import (
     generate_topic_slides,
     generate_quiz_slides,
     generate_guess_output_slides,
     generate_logic_puzzle_slides
-
-    
 )
 from modules.slide_builder import generate_slides_and_save
 from modules.pinterest_agent import fetch_pinterest_images
@@ -26,23 +30,11 @@ from modules.topic_tracker import (
 )
 from modules.scheduler import post_topic
 from utils.helpers import ensure_dir, sanitize_filename
-from dotenv import load_dotenv
 
-load_dotenv()
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-
-# Configuration (keep environment secrets in .env in production)
+# Configuration
 FLASK_SECRET = os.getenv("FLASK_SECRET", "your_secret_key_1234")
 IG_USERNAME = os.getenv("IG_USERNAME", "")
 IG_PASSWORD = os.getenv("IG_PASSWORD", "")
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN", "")
-INSTAGRAM_ID = os.getenv("INSTAGRAM_ID", "")
 
 # Directory setup
 STATIC_POSTS = os.path.abspath(os.path.join(os.path.dirname(__file__), "static", "posts"))
@@ -210,17 +202,12 @@ def post_image():
         return redirect(url_for("index"))
 
     try:
-        if ACCESS_TOKEN and INSTAGRAM_ID:
-            success = post_single_image(image_path, caption)
-        else:
-            from modules.insta_poster import post_local_image
-            result = post_local_image(image_path, caption, IG_USERNAME, IG_PASSWORD)
-            success = result is not None
-
+        success = post_single_image(image_path, caption)
+        
         if success:
-            flash(f"Posted to Instagram: {image}")
+            flash(f"✅ Posted to Instagram: {image}")
         else:
-            flash(f"Failed to post: {image}")
+            flash(f"❌ Failed to post: {image}")
     except Exception as e:
         logger.error(f"Post failed: {e}")
         flash(f"Error: {str(e)}")
@@ -253,9 +240,9 @@ def post_carousel():
         success = post_carousel_instagram(image_paths, caption)
 
         if success:
-            flash(f"Posted carousel with {len(images)} images!")
+            flash(f"✅ Posted carousel with {len(images)} images!")
         else:
-            flash("Carousel posting failed")
+            flash("❌ Carousel posting failed")
     except Exception as e:
         logger.error(f"Carousel post failed: {e}")
         flash(f"Error: {str(e)}")
@@ -323,9 +310,9 @@ def add_topic_route():
 
     try:
         add_topic(topic, note=category)
-        flash(f"Added topic: {topic}")
+        flash(f"✅ Added topic: {topic}")
     except Exception as e:
-        flash(f"Failed to add topic: {str(e)}")
+        flash(f"❌ Failed to add topic: {str(e)}")
 
     return redirect(url_for("index"))
 
@@ -335,9 +322,9 @@ def mark_complete(topic):
     """Mark a topic as complete"""
     try:
         mark_topic_done(topic)
-        flash(f"Marked {topic} as complete")
+        flash(f"✅ Marked {topic} as complete")
     except Exception as e:
-        flash(f"Error: {str(e)}")
+        flash(f"❌ Error: {str(e)}")
 
     return redirect(url_for("index"))
 
@@ -349,11 +336,11 @@ def delete_post(filename):
         path = os.path.join(STATIC_POSTS, filename)
         if os.path.exists(path):
             os.remove(path)
-            flash(f"Deleted: {filename}")
+            flash(f"✅ Deleted: {filename}")
         else:
-            flash(f"File not found: {filename}")
+            flash(f"❌ File not found: {filename}")
     except Exception as e:
-        flash(f"Delete failed: {str(e)}")
+        flash(f"❌ Delete failed: {str(e)}")
 
     return redirect(url_for("index"))
 

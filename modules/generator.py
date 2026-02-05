@@ -5,6 +5,10 @@ import textwrap
 from datetime import datetime
 from utils.logger import logger
 
+
+# Now get the API key
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 # Optional OpenAI client
 try:
     from openai import OpenAI
