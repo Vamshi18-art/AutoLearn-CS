@@ -29,6 +29,13 @@ from utils.helpers import ensure_dir, sanitize_filename
 from dotenv import load_dotenv
 
 load_dotenv()
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 
 # Configuration (keep environment secrets in .env in production)
 FLASK_SECRET = os.getenv("FLASK_SECRET", "your_secret_key_1234")
