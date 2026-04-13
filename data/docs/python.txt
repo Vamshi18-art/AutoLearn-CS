@@ -1,0 +1,69 @@
+Python Programming Basics
+
+Python is a high-level, interpreted programming language known for its simplicity and readability. It is widely used in web development, data science, artificial intelligence, and automation.
+
+Key Features of Python:
+- Easy to learn and use
+- Interpreted language (no need to compile)
+- Dynamically typed
+- Large standard library
+- Supports multiple programming paradigms (OOP, functional, procedural)
+
+Variables in Python:
+Variables are used to store data values. Python does not require explicit declaration of variable types.
+
+Example:
+x = 10
+name = "Krish"
+
+Data Types:
+- int (integer numbers)
+- float (decimal numbers)
+- str (string/text)
+- list (ordered collection)
+- tuple (immutable collection)
+- dict (key-value pairs)
+
+Example:
+numbers = [1, 2, 3, 4]
+person = {"name": "Krish", "age": 22}
+
+Control Statements:
+Python supports conditional and looping statements.
+
+If-Else Example:
+if x > 5:
+    print("Greater than 5")
+else:
+    print("Less than or equal to 5")
+
+Loop Example:
+for i in range(5):
+    print(i)
+
+Functions:
+Functions are reusable blocks of code.
+
+Example:
+def greet(name):
+    return "Hello " + name
+
+Object-Oriented Programming:
+Python supports OOP concepts like classes and objects.
+
+Example:
+class Person:
+    def __init__(self, name):
+        self.name = name
+
+    def display(self):
+        print(self.name)
+
+Applications of Python:
+- Web Development (Django, Flask)
+- Data Science (Pandas, NumPy)
+- Machine Learning (TensorFlow, PyTorch)
+- Automation and Scripting
+
+Conclusion:
+Python is a powerful and flexible language suitable for beginners and professionals.

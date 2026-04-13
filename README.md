@@ -1,198 +1,118 @@
-🚀 AutoLearn CS – AI-Driven CS Learning & Content Automation System
+# Unified Dashboard — AutoLearnCS + AutoJob Broadcast
 
-AutoLearn CS is an AI-powered autonomous system that automates computer science learning by extracting topics from the web, generating summaries & quizzes with LLMs, and creating Instagram-ready educational posts.
-The system integrates Playwright, LangChain, and Instagram Business API to deliver end-to-end automation with 90% reduction in manual effort.
+One Flask app, two powerful tools:
+- **AutoLearnCS** (`/`) — DSA slide generator + Instagram publisher
+- **AutoJob Bot** (`/jobs`) — Real-time job scraper → AI processor → Telegram broadcaster
 
-🌟 Features
-🔍 1. Automated CS Topic Extraction (Playwright)
+---
 
-Scrapes concepts, problems, explanations from learning platforms.
+## 📁 Folder Structure
 
-Handles dynamic websites with retry + wait strategies.
+```
+unified_project/
+│
+├── app.py                          ← Unified Flask entry point (run this)
+├── requirements.txt
+├── .env.example                    ← Copy to .env and fill credentials
+│
+├── job_module/                     ← AutoJob backend
+│   ├── __init__.py
+│   ├── config.py                   ← All job bot settings
+│   ├── scraper.py                  ← Multi-source scraper (Naukri, LinkedIn, Indeed, etc.)
+│   ├── ai_processor.py             ← GPT-3.5 job structuring
+│   ├── deduplicator.py             ← Cross-run deduplication
+│   ├── formatter.py                ← Telegram message formatter
+│   ├── telegram_sender.py          ← Telegram Bot API sender
+│   ├── logger.py                   ← Shared logger
+│   ├── main_job.py                 ← Pipeline orchestrator
+│   ├── scheduler.py                ← APScheduler wrapper
+│   └── seen_jobs.json              ← Auto-generated dedup history
+│
+├── modules/                        ← AutoLearnCS backend (your existing modules)
+│   ├── __init__.py
+│   ├── generator.py                ← Slide content generator (OpenAI)
+│   ├── slide_dispatcher.py         ← Routes topics to correct generator
+│   ├── slide_builder.py            ← Renders slides to PNG images
+│   ├── insta_poster.py             ← Instagram posting (instagrapi)
+│   ├── pinterest_agent.py          ← Pinterest image fetcher
+│   ├── topic_tracker.py            ← Topic scheduling state
+│   └── scheduler.py                ← AutoLearnCS post scheduler
+│
+├── utils/                          ← Shared utilities
+│   ├── __init__.py
+│   ├── logger.py                   ← App-wide logger
+│   └── helpers.py                  ← sanitize_filename, ensure_dir, etc.
+│
+├── templates/
+│   ├── index.html                  ← AutoLearnCS dashboard
+│   └── jobs.html                   ← AutoJob dashboard
+│
+└── static/
+    └── posts/                      ← Generated slide images (auto-created)
+```
 
-🧠 2. AI Summaries & Quiz Generation (LangChain + LLMs)
+---
 
-Generates clean summaries, explanations, and quiz questions.
+## 🚀 Setup & Run
 
-Avoids hallucinations using structured prompts & output parsers.
-
-🎨 3. Auto-Generated Instagram Carousel Posts
-
-Converts extracted content into visually appealing 1080×1080 slides.
-
-Uses custom templates built with Pillow.
-
-📤 4. Instagram Business API Integration
-
-Automatically uploads carousel posts and captions.
-
-Supports instant publishing & scheduled posting.
-
-🔄 5. Fully Autonomous Workflow
-
-Extraction → Processing → AI Generation → Image Creation → Posting
-All handled automatically without user intervention.
-
-🛠️ Tech Stack
-Languages
-
-Python
-
-AI / LLM
-
-LangChain
-
-OpenAI / LLM APIs
-
-Prompt Engineering
-
-RAG (optional)
-
-Web Automation
-
-Playwright (Browser Automation + Scraping)
-
-Content Generation
-
-Pillow (Image Creation)
-
-Custom Carousel Templates
-
-APIs
-
-Instagram Business Graph API
-
-Facebook Graph API Authentication
-
-Utilities
-
-dotenv
-
-Requests
-
-JSON
-
-Logging System
-
-📁 Project Structure
-AutoLearn-CS/
-│── data/
-│── images/
-│── templates/
-│── modules/
-│   ├── scraper.py
-│   ├── ai_pipeline.py
-│   ├── post_generator.py
-│   ├── instagram_api.py
-│   ├── workflow.py
-│── ig_session.json (IGNORED)
-│── .env (IGNORED)
-│── requirements.txt
-│── README.md
-│── run.py
-
-🧩 System Architecture
-[Playwright Scraper]
-        ⬇
-[AI Processing – LangChain + LLMs]
-        ⬇
-[Content Formatter + Carousel Generator]
-        ⬇
-[Instagram API – Auto Publish]
-
-🖥️ Installation & Setup
-1️⃣ Clone Repository
-git clone https://github.com/Vamshi18-art/AutoLearn-CS.git
-cd AutoLearn-CS
-
-2️⃣ Install Dependencies
+### 1. Install dependencies
+```bash
 pip install -r requirements.txt
+playwright install chromium
+```
 
-3️⃣ Setup Environment Variables
+### 2. Configure environment
+```bash
+cp .env.example .env
+# Edit .env with your API keys
+```
 
-Create a .env file:
+### 3. Copy your existing modules
+Place your existing AutoLearnCS files into `modules/` and `utils/`:
+```
+modules/generator.py
+modules/slide_dispatcher.py
+modules/slide_builder.py
+modules/insta_poster.py
+modules/pinterest_agent.py
+modules/topic_tracker.py
+modules/scheduler.py
+utils/logger.py
+utils/helpers.py
+```
 
-IG_ACCESS_TOKEN=your_token_here
-PAGE_ID=your_page_id
-IG_BUSINESS_ID=your_ig_business_id
-OPENAI_API_KEY=your_openai_key
+### 4. Run
+```bash
+python app.py
+```
 
-4️⃣ Add Instagram Session File
+- AutoLearnCS: http://localhost:5000/
+- AutoJob Bot:  http://localhost:5000/jobs
 
-Place your ig_session.json in the root folder.
+---
 
-⚠️ Do NOT upload this file to GitHub.
+## 🌐 Job Sources Supported
 
-5️⃣ Run the Automation
-python run.py
+| Source | Location Filter | Experience Filter | Notes |
+|--------|----------------|-------------------|-------|
+| **Naukri.com** | ✅ India cities | ✅ Years range | Best for India jobs |
+| **LinkedIn India** | ✅ Any city | ✅ Extracted from JD | Global reach |
+| **Indeed India** | ✅ India + global | ✅ Level-based | Large volume |
+| **RemoteOK** | Remote only | ❌ | Remote-focused |
+| **WeWorkRemotely** | Remote only | ❌ | Remote-focused |
 
-🧪 Example Output
+### Example search queries
+- Query: `Python Developer`, Location: `Bangalore`, Experience: `2-5`
+- Query: `React Frontend`, Location: `Remote`, Experience: `1-3`
+- Query: `Data Scientist`, Location: `Mumbai`, Experience: `3+`
 
-AI-generated summaries
+---
 
-Quiz questions
+## 🔑 Required API Keys
 
-Carousel image slides (1080×1080)
-
-Auto-posted Instagram content
-
-💡 Experiences & Challenges Faced
-1. Handling Dynamic Websites
-
-Playwright timeouts & selectors failing
-
-Solved with retry logic + stable locators
-
-2. Ensuring AI Output Consistency
-
-LLM hallucinations
-
-Fixed using structured prompts + validators
-
-3. Image Formatting Issues
-
-Text exceeding boundaries
-
-Implemented custom text wrapping & auto-layout
-
-4. Instagram API Errors
-
-Token expiration, upload container failures
-
-Solved using logging + automated retry mechanism
-
-5. Data Flow Automation
-
-Linking scraper → AI → generator → poster
-
-Designed modular pipeline with error recovery
-
-📈 Key Achievements
-
-90% automation of the entire workflow
-
-Real-time AI content generation
-
-Fully autonomous Instagram posting
-
-Demonstrated strong AI + automation + API integration skills
-
-🔐 Security Notes
-
-.env and ig_session.json are ignored for safety
-
-Never commit credentials to GitHub
-
-Uses secure environment variable handling
-
-🤝 Contributing
-
-Pull requests and improvements are welcome!
-Feel free to fork and experiment with additional AI features.
-
-📬 Contact
-
-H Vamshi Krishna
-📩 Email: vamshikrishna200227@gmail.com
-
-🔗 GitHub: https://github.com/Vamshi18-art
+| Key | Used For | Where to Get |
+|-----|----------|--------------|
+| `OPENAI_API_KEY` | AI job structuring | platform.openai.com |
+| `TELEGRAM_BOT_TOKEN` | Sending job alerts | @BotFather on Telegram |
+| `TELEGRAM_CHAT_ID` | Your channel/group | Channel username or ID |
+| `IG_USERNAME` / `IG_PASSWORD` | Instagram posting | Your IG credentials |

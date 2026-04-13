@@ -36,32 +36,29 @@ THEMES = {
         "accent": (147, 51, 234),
     },
     "light_cream": {
-        "gradient_top": (255, 252, 244),      # Soft cream background
-        "gradient_bottom": (250, 240, 215),   # Light beige for subtle contrast
-        "header": (210, 180, 140),            # Tan brown for warmth
-        "header_text": (255, 255, 255),       # White header text
-        "heading": (101, 67, 33),             # Deep brown heading
-        "body": (80, 54, 22),                 # Earth-toned readable text
-        "code_bg": (220, 198, 156),           # Slightly darker cream for code blocks
-        "code_text": (40, 30, 10),            # Dark brown for code text
-        "panel": (255, 255, 255, 245),        # Light white semi-transparent panel
+        "gradient_top": (255, 252, 244),
+        "gradient_bottom": (250, 240, 215),
+        "header": (210, 180, 140),
+        "header_text": (255, 255, 255),
+        "heading": (101, 67, 33),
+        "body": (80, 54, 22),
+        "code_bg": (220, 198, 156),
+        "code_text": (40, 30, 10),
+        "panel": (255, 255, 255, 245),
         "accent": (205, 133, 63),
-    }, 
-                                # Bronze accent color
-"logic_light": {
-    "gradient_top": (255, 255, 255),      # White top
-    "gradient_bottom": (230, 230, 230),   # Light gray
-    "header": (30, 30, 30),               # Deep charcoal
-    "header_text": (255, 255, 255),       # White
-    "heading": (20, 20, 20),              # Black
-    "body": (50, 50, 50),                 # Dark gray
-    "code_bg": (240, 240, 240),           # Light gray code box
-    "code_text": (30, 30, 30),            # Black text
-    "panel": (255, 255, 255, 245),        # White translucent
-    "accent": (0, 0, 0)                   # Pure black for dots/bullets
-}
-
-
+    },
+    "logic_light": {
+        "gradient_top": (255, 255, 255),
+        "gradient_bottom": (230, 230, 230),
+        "header": (30, 30, 30),
+        "header_text": (255, 255, 255),
+        "heading": (20, 20, 20),
+        "body": (50, 50, 50),
+        "code_bg": (240, 240, 240),
+        "code_text": (30, 30, 30),
+        "panel": (255, 255, 255, 245),
+        "accent": (0, 0, 0)
+    }
 }
 
 
@@ -288,11 +285,11 @@ def make_slide(topic_title, heading, body, out_path, slide_number, theme=DEFAULT
 
         img.save(out_path, format="PNG", optimize=True, quality=95)
         logger.info("✅ Successfully saved slide: %s (theme: %s)", out_path, theme)
-        return True  # ADD THIS LINE - return True for success
+        return True
 
     except Exception as e:
         logger.error(f"❌ Failed to create slide {out_path}: {e}")
-        return False  # ADD THIS LINE - return False for failure
+        return False
 
 
 def generate_slides_and_save(topic_obj, slides, output_dir="static/posts"):
@@ -319,24 +316,36 @@ def generate_slides_and_save(topic_obj, slides, output_dir="static/posts"):
 
         no_topic = theme == "light_cream"
 
-        # Generate each slide
+        # 🔥 MAIN FIX HERE
         for i, slide in enumerate(slides, start=1):
             filename = f"{topic_obj['id']}_{base}_{i}.png"
             path = os.path.join(output_dir, filename)
-            
-            heading = slide.get('heading', f'Slide {i}')
-            body = slide.get('body', 'Content not available.')
-            
+
+            # ✅ FIX: map correct keys
+            heading = slide.get('title', f"Slide {i}")
+
+            content = slide.get('content', [])
+
+            # 🔥 convert list → string for rendering
+            if isinstance(content, list):
+                body = "\n".join(content)
+            else:
+                body = str(content)
+
+            # fallback safety
+            if not body.strip():
+                body = "• Content coming soon"
+
             success = make_slide(
-                topic_obj['topic'], 
-                heading, 
-                body, 
-                path, 
-                i, 
-                theme=theme, 
+                topic_obj['topic'],
+                heading,
+                body,
+                path,
+                i,
+                theme=theme,
                 no_topic=no_topic
             )
-            
+
             if success:
                 out_paths.append(path)
             else:

@@ -1,0 +1,24 @@
+# requirements.txt — Unified Dashboard (AutoLearnCS + AutoJob)
+# pip install -r requirements.txt
+# playwright install chromium
+
+# ── Web framework ──────────────────────────────────────────
+flask>=3.0.0
+
+# ── Web scraping ──────────────────────────────────────────
+playwright>=1.44.0
+
+# ── AI ────────────────────────────────────────────────────
+openai>=1.30.0
+
+# ── Scheduler ─────────────────────────────────────────────
+APScheduler>=3.10.4
+
+# ── HTTP ──────────────────────────────────────────────────
+requests>=2.31.0
+
+# ── Env vars ──────────────────────────────────────────────
+python-dotenv>=1.0.0
+
+# ── Image generation (AutoLearnCS) ────────────────────────
+Pillow>=10.0.0

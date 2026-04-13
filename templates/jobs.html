@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoJob Broadcast — Job Bot Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #4f46e5; --primary-dark: #4338ca; --primary-light: #818cf8;
+      --secondary: #f1f5f9; --success: #10b981; --success-dark: #059669;
+      --danger: #ef4444; --danger-dark: #dc2626; --warning: #f59e0b;
+      --text-primary: #0f172a; --text-secondary: #64748b; --text-light: #94a3b8;
+      --border: #e2e8f0; --card-bg: #fff; --bg: #f8fafc;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-primary); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+    .header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #4f46e5 100%);
+      color: white; padding: 2.5rem 0 3.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      position: relative; overflow: hidden;
+    }
+    .header::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    .header-content { max-width: 1400px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .header h1 { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.5px; }
+    .header p { font-size: 1rem; opacity: 0.9; margin-top: 0.4rem; }
+    .nav-tabs { display: flex; gap: 0.75rem; }
+    .nav-tab { padding: 0.625rem 1.25rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem; text-decoration: none; border: 2px solid rgba(255,255,255,0.3); color: white; transition: all 0.2s; }
+    .nav-tab:hover, .nav-tab.active { background: rgba(255,255,255,0.2); border-color: white; }
+
+    .container { max-width: 1400px; margin: -2rem auto 0; padding: 0 2rem 4rem; position: relative; z-index: 2; }
+    .grid { display: grid; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+    .card { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-md); padding: 1.75rem; border: 1px solid var(--border); transition: all 0.3s; position: relative; overflow: hidden; }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--primary-light)); transform: scaleX(0); transition: transform 0.3s ease; }
+    .card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .card:hover::before { transform: scaleX(1); }
+
+    .card-header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--secondary); }
+    .card-header h3 { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; }
+    .card-header h3::before { content: ''; width: 5px; height: 24px; background: linear-gradient(180deg, var(--primary), var(--primary-light)); border-radius: 3px; }
+
+    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; }
+    input.field, select { width: 100%; padding: 0.8rem 1rem; border: 2px solid var(--border); border-radius: 10px; font-size: 0.9rem; font-family: inherit; transition: all 0.2s; background: white; }
+    input.field:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79,70,229,0.1); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group:last-child { margin-bottom: 0; }
+
+    /* Source checkboxes */
+    .source-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.6rem; margin-top: 0.5rem; }
+    .source-chip { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.875rem; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; font-weight: 600; background: white; }
+    .source-chip input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+    .source-chip:has(input:checked) { border-color: var(--primary); background: #eff6ff; color: var(--primary); }
+    .source-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-remoteok { background: #ef4444; } .dot-linkedin { background: #0077b5; }
+    .dot-wwr { background: #059669; } .dot-naukri { background: #f97316; }
+    .dot-indeed { background: #2563eb; }
+
+    .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 4px 14px rgba(79,70,229,0.4); }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,0.5); }
+    .btn-secondary { background: var(--secondary); color: var(--text-primary); border: 2px solid var(--border); }
+    .btn-secondary:hover { background: #e2e8f0; transform: translateY(-1px); }
+    .btn-danger { background: linear-gradient(135deg, var(--danger), var(--danger-dark)); color: white; }
+    .btn-danger:hover { transform: translateY(-2px); }
+    .btn-success { background: linear-gradient(135deg, var(--success), var(--success-dark)); color: white; box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
+    .btn-success:hover { transform: translateY(-2px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+    .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+
+    /* Metric cards */
+    .metric-card { background: white; border-radius: 14px; border: 2px solid var(--border); padding: 1.5rem; text-align: center; transition: all 0.3s; }
+    .metric-card:hover { border-color: var(--primary-light); box-shadow: var(--shadow-md); }
+    .metric-value { font-size: 2.25rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+    .metric-label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 0.25rem; }
+
+    /* Pipeline steps */
+    .pipeline { display: flex; gap: 0; margin: 1rem 0; }
+    .step { flex: 1; text-align: center; position: relative; }
+    .step::after { content: ''; position: absolute; top: 20px; left: 50%; right: -50%; height: 2px; background: var(--border); z-index: 0; }
+    .step:last-child::after { display: none; }
+    .step-circle { width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-size: 0.8rem; font-weight: 700; position: relative; z-index: 1; transition: all 0.3s; }
+    .step-label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
+    .step-count { font-size: 0.75rem; color: var(--text-light); margin-top: 0.2rem; }
+    .step.running .step-circle { border-color: var(--primary); background: #eff6ff; color: var(--primary); animation: pulse 1.5s infinite; }
+    .step.done .step-circle { border-color: var(--success); background: var(--success); color: white; }
+    .step.done::after { background: var(--success); }
+    .step.error .step-circle { border-color: var(--danger); background: var(--danger); color: white; }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(79,70,229,0.4); } 50% { box-shadow: 0 0 0 8px rgba(79,70,229,0); } }
+
+    /* Progress bar */
+    .progress-bar { background: var(--secondary); border-radius: 999px; height: 10px; overflow: hidden; margin: 1rem 0 0.5rem; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 999px; transition: width 0.5s ease; width: 0%; }
+    .progress-label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
+
+    /* Log */
+    .log-box { background: #0f172a; border-radius: 12px; padding: 1.25rem; height: 280px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.8rem; color: #94a3b8; }
+    .log-entry { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .log-entry .ts { color: #475569; margin-right: 0.5rem; }
+    .log-entry.ok { color: #34d399; }
+    .log-entry.warn { color: #fbbf24; }
+    .log-entry.err { color: #f87171; }
+    .log-entry.info { color: #94a3b8; }
+
+    /* Job cards */
+    .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; margin-top: 1.25rem; }
+    .job-card { background: white; border: 2px solid var(--border); border-radius: 14px; padding: 1.25rem; transition: all 0.3s; }
+    .job-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); border-color: var(--primary-light); }
+    .job-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+    .job-meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+    .job-tag { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+    .tag-company { background: #eff6ff; color: #1d4ed8; }
+    .tag-location { background: #f0fdf4; color: #15803d; }
+    .tag-exp { background: #fef3c7; color: #d97706; }
+    .tag-salary { background: #fdf4ff; color: #9333ea; }
+    .tag-source { background: #f1f5f9; color: #64748b; }
+    .job-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.75rem; }
+    .job-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--primary); font-size: 0.85rem; font-weight: 600; text-decoration: none; }
+    .job-link:hover { text-decoration: underline; }
+
+    /* Status badge */
+    .status-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.875rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+    .status-idle { background: #f1f5f9; color: #64748b; }
+    .status-running { background: #eff6ff; color: var(--primary); }
+    .status-done { background: #f0fdf4; color: var(--success); }
+    .status-error { background: #fef2f2; color: var(--danger); }
+
+    /* Scheduler section */
+    .sched-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .sched-info { font-size: 0.9rem; color: var(--text-secondary); font-weight: 500; }
+    .sched-info strong { color: var(--primary); }
+
+    footer { text-align: center; padding: 2rem 0; color: var(--text-secondary); font-size: 0.875rem; border-top: 2px solid var(--border); margin-top: 3rem; }
+
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.75rem; }
+      .grid-2, .grid-4 { grid-template-columns: 1fr; }
+      .container { padding: 0 1rem 2rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .pipeline { flex-direction: column; gap: 0.5rem; }
+      .step::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <div>
+        <h1>💼 AutoJob Broadcast</h1>
+        <p>Real-time job scraper → AI processor → Telegram broadcaster</p>
+      </div>
+      <nav class="nav-tabs">
+        <a href="/" class="nav-tab">📚 AutoLearnCS</a>
+        <a href="/jobs" class="nav-tab active">💼 AutoJob Bot</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Metrics -->
+    <div class="grid grid-4" style="margin-top: 0;">
+      <div class="metric-card"><div class="metric-value" id="m-scraped">0</div><div class="metric-label">Scraped</div></div>
+      <div class="metric-card"><div class="metric-value" id="m-new">0</div><div class="metric-label">New Jobs</div></div>
+      <div class="metric-card"><div class="metric-value" id="m-processed">0</div><div class="metric-label">AI Processed</div></div>
+      <div class="metric-card"><div class="metric-value" id="m-sent">0</div><div class="metric-label">Sent to Telegram</div></div>
+    </div>
+
+    <div class="grid grid-2">
+      <!-- Run Pipeline -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🚀 Run Job Pipeline</h3>
+          <span class="status-badge status-idle" id="statusBadge">● Idle</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Job Search Query</label>
+            <input class="field" id="query" type="text" value="Python Developer" placeholder="e.g. React Developer">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input class="field" id="location" type="text" value="Bangalore" placeholder="e.g. Remote, Mumbai, Delhi">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Experience (years)</label>
+            <input class="field" id="experience" type="text" placeholder="e.g. 2-5, 3+, 1 (leave blank for any)">
+          </div>
+          <div class="form-group">
+            <label>Max Jobs</label>
+            <input class="field" id="maxJobs" type="number" value="10" min="1" max="50">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Job Sources</label>
+          <div class="source-grid">
+            <label class="source-chip"><input type="checkbox" value="naukri" checked><span class="dot dot-naukri"></span>Naukri.com</label>
+            <label class="source-chip"><input type="checkbox" value="linkedin" checked><span class="dot dot-linkedin"></span>LinkedIn India</label>
+            <label class="source-chip"><input type="checkbox" value="indeed" checked><span class="dot dot-indeed"></span>Indeed India</label>
+            <label class="source-chip"><input type="checkbox" value="remoteok"><span class="dot dot-remoteok"></span>RemoteOK</label>
+            <label class="source-chip"><input type="checkbox" value="wwr"><span class="dot dot-wwr"></span>WeWorkRemotely</label>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" id="runBtn" onclick="runPipeline()">▶ Run Now</button>
+          <button class="btn btn-danger" id="stopBtn" onclick="stopPipeline()" disabled>⏹ Stop</button>
+          <button class="btn btn-secondary" onclick="resetState()">↺ Reset</button>
+          <button class="btn btn-secondary" onclick="clearSeen()">🗑 Clear History</button>
+        </div>
+
+        <!-- Progress -->
+        <div style="margin-top: 1.5rem;">
+          <div class="pipeline" id="pipeline">
+            <div class="step" id="step-0"><div class="step-circle">1</div><div class="step-label">Scrape</div><div class="step-count" id="sc-0">—</div></div>
+            <div class="step" id="step-1"><div class="step-circle">2</div><div class="step-label">Dedup</div><div class="step-count" id="sc-1">—</div></div>
+            <div class="step" id="step-2"><div class="step-circle">3</div><div class="step-label">AI</div><div class="step-count" id="sc-2">—</div></div>
+            <div class="step" id="step-3"><div class="step-circle">4</div><div class="step-label">Format</div><div class="step-count" id="sc-3">—</div></div>
+            <div class="step" id="step-4"><div class="step-circle">5</div><div class="step-label">Send</div><div class="step-count" id="sc-4">—</div></div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-label" id="progressLabel">Not started</div>
+        </div>
+      </div>
+
+      <!-- Config & Scheduler -->
+      <div class="card">
+        <div class="card-header"><h3>⚙️ Configuration</h3></div>
+
+        <div class="form-group">
+          <label>OpenAI API Key</label>
+          <input class="field" id="openaiKey" type="password" placeholder="sk-...">
+        </div>
+        <div class="form-group">
+          <label>Telegram Bot Token</label>
+          <input class="field" id="botToken" type="password" placeholder="123456:ABC...">
+        </div>
+        <div class="form-group">
+          <label>Telegram Chat ID</label>
+          <input class="field" id="chatId" type="text" placeholder="@channel or -100123...">
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="testTelegram()">🔧 Test Bot</button>
+        </div>
+
+        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid var(--secondary);">
+          <div class="card-header" style="margin-bottom: 1rem; padding-bottom: 0.75rem;">
+            <h3 style="font-size: 1rem;">⏰ Auto Scheduler</h3>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Interval (hours)</label>
+              <input class="field" id="schedHours" type="number" value="6" min="1">
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <div class="sched-info" id="schedInfo" style="padding: 0.8rem 0;">
+                <strong>Inactive</strong>
+              </div>
+            </div>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-success" id="schedStartBtn" onclick="startScheduler()">▶ Start Scheduler</button>
+            <button class="btn btn-danger" id="schedStopBtn" onclick="stopScheduler()" disabled>⏹ Stop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log -->
+    <div class="card">
+      <div class="card-header">
+        <h3>📋 Pipeline Log</h3>
+        <button class="btn btn-secondary" onclick="clearLog()" style="margin-left: auto; padding: 0.4rem 0.875rem; font-size: 0.8rem;">Clear</button>
+      </div>
+      <div class="log-box" id="logBox">
+        <div class="log-entry info"><span class="ts">--:--:--</span>Waiting for pipeline…</div>
+      </div>
+    </div>
+
+    <!-- Job Results -->
+    <div class="card" id="jobsSection" style="display: none;">
+      <div class="card-header"><h3>📋 Job Results</h3></div>
+      <div class="jobs-grid" id="jobsGrid"></div>
+    </div>
+
+    <footer>© 2025 AutoJob Broadcast • Unified Dashboard</footer>
+  </div>
+
+  <script>
+    const es = new EventSource('/stream');
+    let logEntries = [];
+
+    es.addEventListener('state', e => applyState(JSON.parse(e.data)));
+    es.addEventListener('log', e => appendLog(JSON.parse(e.data)));
+    es.addEventListener('metrics', e => updateMetrics(JSON.parse(e.data)));
+    es.addEventListener('pipeline', e => updateStep(JSON.parse(e.data)));
+    es.addEventListener('jobs', e => renderJobs(JSON.parse(e.data)));
+    es.addEventListener('log_clear', () => { document.getElementById('logBox').innerHTML = ''; logEntries = []; });
+
+    function applyState(s) {
+      updateMetrics(s.metrics);
+      document.getElementById('progressFill').style.width = s.progress + '%';
+      document.getElementById('progressLabel').textContent = s.progress_label;
+      setStatus(s.status);
+
+      const running = s.status === 'running';
+      document.getElementById('runBtn').disabled = running;
+      document.getElementById('stopBtn').disabled = !running;
+
+      const schedActive = s.scheduler_active;
+      document.getElementById('schedStartBtn').disabled = schedActive;
+      document.getElementById('schedStopBtn').disabled = !schedActive;
+      document.getElementById('schedInfo').innerHTML = schedActive
+        ? `<strong style="color:var(--success);">Active</strong> · Next: ${s.next_run || '…'}`
+        : `<strong>Inactive</strong>`;
+
+      if (s.jobs && s.jobs.length) renderJobs(s.jobs);
+
+      s.step_counts.forEach((c, i) => {
+        document.getElementById('sc-' + i).textContent = c;
+      });
+
+      if (s.log) s.log.forEach(l => appendLog(l));
+    }
+
+    function setStatus(status) {
+      const el = document.getElementById('statusBadge');
+      const map = { idle: ['status-idle', '● Idle'], running: ['status-running', '⟳ Running'], done: ['status-done', '✓ Done'], error: ['status-error', '✗ Error'] };
+      const [cls, label] = map[status] || map.idle;
+      el.className = 'status-badge ' + cls;
+      el.textContent = label;
+    }
+
+    function updateMetrics(m) {
+      document.getElementById('m-scraped').textContent = m.scraped;
+      document.getElementById('m-new').textContent = m.new;
+      document.getElementById('m-processed').textContent = m.processed;
+      document.getElementById('m-sent').textContent = m.sent;
+    }
+
+    function updateStep(d) {
+      const el = document.getElementById('step-' + d.step);
+      if (el) {
+        el.className = 'step ' + d.state;
+        document.getElementById('sc-' + d.step).textContent = d.count;
+      }
+    }
+
+    function appendLog(entry) {
+      const box = document.getElementById('logBox');
+      const div = document.createElement('div');
+      div.className = 'log-entry ' + (entry.level || 'info');
+      div.innerHTML = `<span class="ts">${entry.ts}</span>${escHtml(entry.msg)}`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function renderJobs(jobs) {
+      if (!jobs.length) return;
+      const section = document.getElementById('jobsSection');
+      const grid = document.getElementById('jobsGrid');
+      section.style.display = 'block';
+      grid.innerHTML = '';
+      jobs.forEach(j => {
+        grid.innerHTML += `
+          <div class="job-card">
+            <div class="job-title">${escHtml(j.role || j.title || 'Unknown Role')}</div>
+            <div class="job-meta">
+              <span class="job-tag tag-company">🏢 ${escHtml(j.company || 'N/A')}</span>
+              <span class="job-tag tag-location">📍 ${escHtml(j.location || 'N/A')}</span>
+              ${j.experience && j.experience !== 'N/A' ? `<span class="job-tag tag-exp">🎓 ${escHtml(j.experience)}</span>` : ''}
+              ${j.salary && j.salary !== 'N/A' ? `<span class="job-tag tag-salary">💰 ${escHtml(j.salary)}</span>` : ''}
+              ${j.source ? `<span class="job-tag tag-source">🌐 ${escHtml(j.source)}</span>` : ''}
+            </div>
+            <div class="job-desc">${escHtml((j.description || 'No description').substring(0, 180))}${(j.description || '').length > 180 ? '…' : ''}</div>
+            ${j.apply_link && j.apply_link !== 'N/A' ? `<a class="job-link" href="${j.apply_link}" target="_blank">🔗 Apply Here ↗</a>` : ''}
+          </div>`;
+      });
+    }
+
+    function getSelectedSources() {
+      return [...document.querySelectorAll('.source-chip input:checked')].map(cb => cb.value);
+    }
+
+    async function runPipeline() {
+      const sources = getSelectedSources();
+      if (!sources.length) { alert('Please select at least one job source.'); return; }
+
+      const body = {
+        query: document.getElementById('query').value.trim() || 'Python Developer',
+        location: document.getElementById('location').value.trim() || 'Remote',
+        experience: document.getElementById('experience').value.trim(),
+        max_jobs: parseInt(document.getElementById('maxJobs').value) || 10,
+        sources: sources,
+      };
+      const key = document.getElementById('openaiKey').value.trim();
+      const tok = document.getElementById('botToken').value.trim();
+      const cid = document.getElementById('chatId').value.trim();
+      if (key) body.openai_key = key;
+      if (tok) body.bot_token = tok;
+      if (cid) body.chat_id = cid;
+
+      const res = await fetch('/api/run', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (data.error) alert('Error: ' + data.error);
+    }
+
+    async function stopPipeline() {
+      await fetch('/api/stop', { method: 'POST' });
+    }
+
+    async function resetState() {
+      await fetch('/api/reset', { method: 'POST' });
+      document.getElementById('jobsSection').style.display = 'none';
+      ['step-0','step-1','step-2','step-3','step-4'].forEach(id => {
+        document.getElementById(id).className = 'step';
+        document.getElementById(id.replace('step-', 'sc-')).textContent = '—';
+      });
+    }
+
+    async function clearLog() {
+      document.getElementById('logBox').innerHTML = '';
+    }
+
+    async function clearSeen() {
+      if (!confirm('Clear all deduplication history? Next run will re-send previously seen jobs.')) return;
+      const r = await fetch('/api/clear_seen', { method: 'POST' });
+      const d = await r.json();
+      alert(d.ok ? '✅ History cleared!' : '❌ Error: ' + d.error);
+    }
+
+    async function testTelegram() {
+      const body = {};
+      const tok = document.getElementById('botToken').value.trim();
+      const cid = document.getElementById('chatId').value.trim();
+      if (tok) body.bot_token = tok;
+      if (cid) body.chat_id = cid;
+      const r = await fetch('/api/test_telegram', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+      const d = await r.json();
+      alert(d.ok ? '✅ ' + d.message : '❌ ' + d.message);
+    }
+
+    async function startScheduler() {
+      const body = {
+        hours: parseInt(document.getElementById('schedHours').value) || 6,
+        query: document.getElementById('query').value.trim() || 'Python Developer',
+        location: document.getElementById('location').value.trim() || 'Remote',
+        max_jobs: parseInt(document.getElementById('maxJobs').value) || 10,
+      };
+      await fetch('/api/scheduler/start', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    }
+
+    async function stopScheduler() {
+      await fetch('/api/scheduler/stop', { method: 'POST' });
+    }
+  </script>
+</body>
+</html>
